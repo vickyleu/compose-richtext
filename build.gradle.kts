@@ -1,62 +1,86 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-  repositories {
-    mavenCentral()
-    gradlePluginPortal()
-    google()
-  }
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-  dependencies {
-    classpath(BuildPlugins.androidGradlePlugin)
-    classpath(Kotlin.binaryCompatibilityValidatorPlugin)
-    classpath(Kotlin.gradlePlugin)
-    classpath(ktlint)
-  }
-}
+//buildscript {
+//  repositories {
+//    mavenCentral()
+//    gradlePluginPortal()
+//    google()
+//  }
+//
+//  dependencies {
+//    classpath(BuildPlugins.androidGradlePlugin)
+//    classpath(Kotlin.binaryCompatibilityValidatorPlugin)
+//    classpath(Kotlin.gradlePlugin)
+//    classpath(ktlint)
+//  }
+//}
 
 plugins {
-  id("org.jetbrains.dokka") version "1.8.10"
+  alias(libs.plugins.android.library) apply  false
+  alias(libs.plugins.android.application) apply  false
+  alias(libs.plugins.jetbrains.compose) apply  false
+  alias(libs.plugins.compose.compiler) apply  false
+  alias(libs.plugins.kotlin.multiplatform) apply  false
+
+//  id("org.jetbrains.dokka") version "1.8.10"
 }
 
-repositories {
-  mavenCentral()
+val javaVersion = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+check(JavaVersion.current().isCompatibleWith(javaVersion)) {
+  "This project needs to be run with Java ${javaVersion.getMajorVersion()} or higher (found: ${JavaVersion.current()})."
 }
 
-tasks.withType<DokkaMultiModuleTask>().configureEach {
-  outputDirectory.set(rootProject.file("docs/api"))
-  failOnWarning.set(true)
-}
+
+
+//tasks.withType<DokkaMultiModuleTask>().configureEach {
+//  outputDirectory.set(rootProject.file("docs/api"))
+//  failOnWarning.set(true)
+//}
 
 // See https://stackoverflow.com/questions/25324880/detect-ide-environment-with-gradle
 fun isRunningFromIde(): Boolean {
   return project.properties["android.injected.invoked.from.ide"] == "true"
 }
-
-subprojects {
-  repositories {
-    google()
-    mavenCentral()
-    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
+allprojects {
+  if (tasks.findByName("testClasses") == null) {
+    try {
+      tasks.register("testClasses")
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
   }
-
-  tasks.withType<KotlinCompile>().all {
-    kotlinOptions {
+}
+subprojects {
+  tasks.withType<KotlinCompile>().configureEach {
+    compilerOptions{
       // Allow warnings when running from IDE, makes it easier to experiment.
       if (!isRunningFromIde()) {
         allWarningsAsErrors = true
       }
-
-      freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn", "-Xexpect-actual-classes")
+      freeCompilerArgs = listOf(
+        "-Xexpect-actual-classes", // remove warnings for expect classes
+        "-Xskip-prerelease-check",
+        "-opt-in=kotlinx.cinterop.ExperimentalForeignApi",
+        "-opt-in=org.jetbrains.compose.resources.InternalResourceApi",
+      )
     }
   }
 
+//  tasks.withType<KotlinCompile>().all {
+//    kotlinOptions {
+//      // Allow warnings when running from IDE, makes it easier to experiment.
+//      if (!isRunningFromIde()) {
+//        allWarningsAsErrors = true
+//      }
+//
+//      freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn", "-Xexpect-actual-classes")
+//    }
+//  }
+
   // taken from https://github.com/google/accompanist/blob/main/build.gradle
-  afterEvaluate {
+  /*afterEvaluate {
     if (tasks.findByName("dokkaHtmlPartial") == null) {
       // If dokka isn't enabled on this module, skip
       return@afterEvaluate
@@ -95,9 +119,9 @@ subprojects {
         dependsOn("signJvmPublication")
       }
     }
-  }
+  }*/
 
-  afterEvaluate {
+  /*afterEvaluate {
     fun MavenPublication.configure() {
       groupId = property("GROUP").toString()
       version = property("VERSION_NAME").toString()
@@ -130,7 +154,7 @@ subprojects {
       }
     }
 
-    extensions.findByType<PublishingExtension>()?.apply {
+    *//*extensions.findByType<PublishingExtension>()?.apply {
       repositories {
         maven {
           val localProperties = gradleLocalProperties(rootProject.rootDir)
@@ -185,8 +209,8 @@ subprojects {
         gpgPrivatePassword
       )
       sign(publishing.publications)
-    }
-  }
+    }*//*
+  }*/
 }
 
 //disable until the library reaches 1.0.0-beta01

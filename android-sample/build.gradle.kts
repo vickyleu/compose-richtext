@@ -1,16 +1,20 @@
 plugins {
-  id("com.android.application")
-  kotlin("android")
-  id("org.jetbrains.compose") version Compose.desktopVersion
+  alias(libs.plugins.android.application)
+  alias(libs.plugins.jetbrains.compose)
+  id(libs.plugins.kotlin.android.get().pluginId)
+  alias(libs.plugins.compose.compiler)
 }
 
 android {
   namespace = "com.zachklipp.richtext.sample"
-  compileSdk = AndroidConfiguration.compileSdk
+  compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   defaultConfig {
-    minSdk = AndroidConfiguration.minSdk
-    targetSdk = AndroidConfiguration.targetSdk
+    minSdk = libs.versions.android.minSdk.get().toInt()
+  }
+
+  lint {
+    targetSdk = libs.versions.android.targetSdk.get().toInt()
   }
 
   buildFeatures {
@@ -18,25 +22,23 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-  }
-  kotlinOptions {
-    jvmTarget = "11"
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
   }
 
-  composeOptions {
-    kotlinCompilerExtensionVersion = Compose.compilerVersion
+  kotlinOptions {
+    jvmTarget = libs.versions.jvmTarget.get()
   }
+
 }
 
 dependencies {
-  implementation(project(":printing"))
-  implementation(project(":richtext-commonmark"))
-  implementation(project(":richtext-ui-material3"))
-  implementation(project(":slideshow"))
-  implementation(AndroidX.appcompat)
-  implementation(Compose.activity)
+  implementation(projects.printing)
+  implementation(projects.richtextCommonmark)
+  implementation(projects.richtextUiMaterial3)
+  implementation(projects.slideshow)
+  implementation(libs.appcompat)
+  implementation(libs.activity.compose)
   implementation(compose.foundation)
   implementation(compose.materialIconsExtended)
   implementation(compose.material3)

@@ -1,14 +1,23 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-  kotlin("jvm")
-  id("org.jetbrains.compose") version Compose.desktopVersion
+  alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.jetbrains.compose)
+  alias(libs.plugins.compose.compiler)
 }
 
-dependencies {
-  implementation(project(":richtext-commonmark"))
-  implementation(project(":richtext-ui-material"))
-  implementation(compose.desktop.currentOs)
+kotlin{
+  jvm()
+  sourceSets {
+    jvmMain {
+      dependencies {
+        implementation(compose.desktop.currentOs)
+        implementation(projects.richtextUiMaterial)
+        implementation(libs.commonmark)
+      }
+    }
+  }
+
 }
 
 compose.desktop {

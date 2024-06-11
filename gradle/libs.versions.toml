@@ -1,0 +1,43 @@
+[versions]
+activityCompose = "1.9.0"
+agp = "8.4.2"
+annotatedtext = "1.0.3"
+coilCompose = "3.0.0-alpha06"
+commonmark = "0.21.0"
+jvmTarget = "17"
+compose-plugin = "1.6.11"
+kotlin = "2.0.0"
+coroutines-bom = "1.8.1"
+android-compileSdk = "34"
+android-minSdk = "24"
+android-targetSdk = "34"
+dokka = "1.9.20"
+annotations = "23.0.0"
+okhttp = "4.12.0"
+uiToolingData = "1.6.7"
+appcompat = "1.7.0"
+
+[libraries]
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+annotatedtext = { module = "io.github.aghajari:AnnotatedText", version.ref = "annotatedtext" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coilCompose" }
+commonmark = { module = "org.commonmark:commonmark", version.ref = "commonmark" }
+commonmark-ext-autolink = { module = "org.commonmark:commonmark-ext-autolink", version.ref = "commonmark" }
+commonmark-ext-gfm-strikethrough = { module = "org.commonmark:commonmark-ext-gfm-strikethrough", version.ref = "commonmark" }
+commonmark-ext-gfm-tables = { module = "org.commonmark:commonmark-ext-gfm-tables", version.ref = "commonmark" }
+coroutines-bom = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-bom", version.ref = "coroutines-bom" }
+coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+ui-tooling-data = { module = "androidx.compose.ui:ui-tooling-data", version.ref = "uiToolingData" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+# 下面这个是假的，只是为了占位
+jvmTargetPlaceHolder = { id = "org.jdk.kotlin.holder", version.ref = "jvmTarget" }

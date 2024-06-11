@@ -1,56 +1,67 @@
 plugins {
-  id("richtext-kmp-library")
-  id("org.jetbrains.compose") version Compose.desktopVersion
-  id("org.jetbrains.dokka")
-}
-
-repositories {
-  maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.jetbrains.compose)
+  alias(libs.plugins.compose.compiler)
+//  id("org.jetbrains.dokka")
 }
 
 android {
   namespace = "com.halilibo.richtext.markdown"
+  compileSdk = libs.versions.android.compileSdk.get().toInt()
+  defaultConfig {
+    minSdk = libs.versions.android.minSdk.get().toInt()
+  }
+  lint {
+    targetSdk = libs.versions.android.targetSdk.get().toInt()
+  }
+  compileOptions {
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+  }
+
 }
 
 kotlin {
+  applyDefaultHierarchyTemplate()
+  androidTarget()
+  iosArm64()
+  iosSimulatorArm64()
+  iosX64()
+  jvm()
   sourceSets {
-    val commonMain by getting {
-      dependencies {
-        implementation(compose.runtime)
-        implementation(compose.foundation)
-        api(project(":richtext-ui"))
-      }
-    }
-    val commonTest by getting
-
-    val androidMain by getting {
-      dependencies {
-        implementation(Compose.coil)
-        implementation(Compose.annotatedText)
-
-        implementation(Commonmark.core)
-        implementation(Commonmark.tables)
-        implementation(Commonmark.strikethrough)
-        implementation(Commonmark.autolink)
-      }
+    commonMain.get().dependencies {
+      implementation(compose.runtime)
+      implementation(compose.foundation)
+      @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+      implementation(compose.material3)
+      api(projects.richtextUi)
     }
 
-    val jvmMain by getting {
-      dependencies {
-        implementation(compose.desktop.currentOs)
-        implementation(Network.okHttp)
-
-        implementation(Commonmark.core)
-        implementation(Commonmark.tables)
-        implementation(Commonmark.strikethrough)
-        implementation(Commonmark.autolink)
-      }
+    androidMain.get().dependencies {
+      implementation(libs.coil.compose)
+      implementation(libs.annotatedtext)
+      implementation(libs.commonmark)
+      implementation(libs.commonmark.ext.gfm.tables)
+      implementation(libs.commonmark.ext.gfm.strikethrough)
+      implementation(libs.commonmark.ext.autolink)
     }
 
-    val jvmTest by getting {
-      dependencies {
-        implementation(Kotlin.Test.jdk)
-      }
+    iosMain.get().dependencies {
+      implementation(libs.coil.compose)
+    }
+
+    jvmMain.get().dependencies {
+      implementation(compose.desktop.currentOs)
+      implementation(libs.okhttp)
+      implementation(libs.commonmark)
+      implementation(libs.commonmark.ext.gfm.tables)
+      implementation(libs.commonmark.ext.gfm.strikethrough)
+      implementation(libs.commonmark.ext.autolink)
+    }
+
+    jvmTest.get().dependencies {
+      implementation(libs.kotlin.test.junit)
     }
   }
 }

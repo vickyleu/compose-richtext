@@ -1,9 +1,41 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
+  listOf(repositories, dependencyResolutionManagement.repositories).forEach {
+    it.apply {
+      mavenCentral()
+      gradlePluginPortal()
+      google {
+        content {
+          includeGroupByRegex(".*google.*")
+          includeGroupByRegex(".*android.*")
+        }
+      }
+      maven(url = "https://androidx.dev/storage/compose-compiler/repository")
+      maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+  }
+}
+dependencyResolutionManagement {
+//    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+  repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
   repositories {
-    google()
-    gradlePluginPortal()
     mavenCentral()
-    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
+    google {
+      content {
+        includeGroupByRegex(".*google.*")
+        includeGroupByRegex(".*android.*")
+      }
+    }
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-dev") }
+    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
+    maven {
+      setUrl("https://jitpack.io")
+      content {
+        includeGroupByRegex("com.github.*")
+      }
+    }
   }
 }
 
@@ -16,4 +48,6 @@ include(":richtext-markdown")
 include(":android-sample")
 include(":desktop-sample")
 include(":slideshow")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "compose-richtext"

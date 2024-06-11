@@ -1,26 +1,47 @@
 plugins {
-  id("richtext-android-library")
-  id("org.jetbrains.dokka")
-  id("org.jetbrains.compose") version Compose.desktopVersion
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.jetbrains.compose)
+  alias(libs.plugins.compose.compiler)
+//  id("org.jetbrains.dokka")
 }
 
 android {
   namespace = "com.zachklipp.richtext.ui.printing"
+  compileSdk = libs.versions.android.compileSdk.get().toInt()
+  defaultConfig {
+    minSdk = libs.versions.android.minSdk.get().toInt()
+  }
+
+  lint {
+    targetSdk = libs.versions.android.targetSdk.get().toInt()
+  }
+
+  compileOptions {
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+  }
 }
 
-dependencies {
-  implementation(compose.foundation)
-  implementation(compose.uiTooling)
-  // For slot table analysis.
-  implementation(Compose.toolingData)
-  implementation(Compose.activity)
 
-  // TODO Migrate off this.
-  implementation(compose.material)
+
+kotlin{
+  androidTarget()
+  sourceSets {
+    commonMain.get().dependencies {
+      implementation(compose.foundation)
+      implementation(compose.uiTooling)
+      // For slot table analysis.
+      implementation(libs.ui.tooling.data)
+      implementation(libs.activity.compose)
+      // TODO Migrate off this.
+      implementation(compose.material)
+    }
+  }
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
-  kotlinOptions {
-    freeCompilerArgs = freeCompilerArgs + "-Xinline-classes"
+  compilerOptions{
+    freeCompilerArgs.add("-Xinline-classes")
   }
 }

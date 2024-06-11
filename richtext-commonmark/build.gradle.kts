@@ -1,53 +1,117 @@
 plugins {
-  id("richtext-kmp-library")
-  id("org.jetbrains.compose") version Compose.desktopVersion
-  id("org.jetbrains.dokka")
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.jetbrains.compose)
+  alias(libs.plugins.compose.compiler)
+//  id("org.jetbrains.dokka")
 }
 
-repositories {
-  maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-}
 
 android {
   namespace = "com.halilibo.richtext.commonmark"
+  compileSdk = libs.versions.android.compileSdk.get().toInt()
+  defaultConfig {
+    minSdk = libs.versions.android.minSdk.get().toInt()
+  }
+
+  lint {
+    targetSdk = libs.versions.android.targetSdk.get().toInt()
+  }
+
+  compileOptions {
+    sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+    targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
+  }
+}
+
+
+kotlin {
+  applyDefaultHierarchyTemplate()
+  androidTarget()
+
+  listOf(
+    iosArm64(),
+    iosSimulatorArm64(),
+    iosX64()
+  ).forEach {
+    it.compilations.getByName("main"){
+      cinterops{
+        val cmark by creating {
+          defFile(file("src/nativeInterop/cinterop/cmark.def"))
+//          header(file("src/nativeInterop/cinterop/cmark/cmark.h"))
+//          header(file("src/nativeInterop/cinterop/cmark/cmark_export.h"))
+//          header(file("src/nativeInterop/cinterop/cmark/cmark_version.h"))
+          headers(*(file("src/nativeInterop/cinterop/cmark/include/").listFiles()!!.toList().toTypedArray()))
+          extraOpts(
+            "-libraryPath",
+            file("src/nativeInterop/cinterop/cmark/${it.targetName}/").absolutePath.apply {
+              println("cmark library path: $this")
+            }
+          )
+        }
+      }
+    }
+  }
+
+
+  jvm()
+  sourceSets {
+    commonMain.get().dependencies {
+      implementation(compose.runtime)
+      api(projects.richtextUi)
+      api(projects.richtextMarkdown)
+      implementation(project.dependencies.platform(libs.coroutines.bom))
+      api(libs.coroutines.core)
+    }
+    jvmMain.get().dependencies {
+      implementation(libs.commonmark)
+      implementation(libs.commonmark.ext.gfm.tables)
+      implementation(libs.commonmark.ext.gfm.strikethrough)
+      implementation(libs.commonmark.ext.autolink)
+    }
+    androidMain.get().dependencies {
+      implementation(libs.commonmark)
+      implementation(libs.commonmark.ext.gfm.tables)
+      implementation(libs.commonmark.ext.gfm.strikethrough)
+      implementation(libs.commonmark.ext.autolink)
+    }
+    jvmTest.get().dependencies {
+      implementation(libs.kotlin.test.junit)
+    }
+
+//    targets.withType<KotlinNativeTarget> {
+//      val targetName = this.name
+//      val main by compilations.getting {
+//        cinterops {
+//          val cmark by creating {
+//            defFile(file("src/nativeInterop/cinterop/cmark.def"))
+//            header(file("src/nativeInterop/cinterop/cmark/cmark.h"))
+//            header(file("src/nativeInterop/cinterop/cmark/cmark_export.h"))
+//            header(file("src/nativeInterop/cinterop/cmark/cmark_version.h"))
+//            extraOpts(
+//              "-libraryPath",
+//              file("src/nativeInterop/cinterop/cmark/$targetName/").absolutePath.apply {
+//                println("cmark library path: $this")
+//              }
+//            )
+//          }
+//        }
+//      }
+//    }
+  }
 }
 
 kotlin {
-  sourceSets {
-    val commonMain by getting {
-      dependencies {
-        implementation(compose.runtime)
-        api(project(":richtext-ui"))
-        api(project(":richtext-markdown"))
-      }
-    }
-    val commonTest by getting
-
-    val androidMain by getting {
-      kotlin.srcDir("src/commonJvmAndroid/kotlin")
-      dependencies {
-        implementation(Commonmark.core)
-        implementation(Commonmark.tables)
-        implementation(Commonmark.strikethrough)
-        implementation(Commonmark.autolink)
-      }
-    }
-
-    val jvmMain by getting {
-      kotlin.srcDir("src/commonJvmAndroid/kotlin")
-      dependencies {
-        implementation(Commonmark.core)
-        implementation(Commonmark.tables)
-        implementation(Commonmark.strikethrough)
-        implementation(Commonmark.autolink)
-      }
-    }
-
-    val jvmTest by getting {
-      kotlin.srcDir("src/commonJvmAndroidTest/kotlin")
-      dependencies {
-        implementation(Kotlin.Test.jdk)
-      }
-    }
+  @Suppress("OPT_IN_USAGE")
+  compilerOptions {
+    freeCompilerArgs = listOf(
+      "-Xexpect-actual-classes", // remove warnings for expect classes
+      "-Xskip-prerelease-check",
+      "-opt-in=kotlinx.cinterop.ExperimentalForeignApi",
+      "-opt-in=org.jetbrains.compose.resources.InternalResourceApi",
+    )
+  }
+  jvmToolchain {
+    languageVersion.set(JavaLanguageVersion.of(libs.versions.jvmTarget.get()))
   }
 }
