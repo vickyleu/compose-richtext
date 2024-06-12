@@ -23,6 +23,13 @@ android {
     targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
   }
 
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+      withJavadocJar()
+    }
+  }
+
 }
 
 

@@ -22,6 +22,14 @@ android {
     sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
     targetCompatibility = JavaVersion.toVersion(libs.versions.jvmTarget.get())
   }
+
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+      withJavadocJar()
+    }
+  }
+
 }
 
 
@@ -34,19 +42,17 @@ kotlin {
     iosSimulatorArm64(),
     iosX64()
   ).forEach {
-    it.compilations.getByName("main"){
-      cinterops{
+    it.compilations.getByName("main") {
+      cinterops {
         val cmark by creating {
           defFile(file("src/nativeInterop/cinterop/cmark.def"))
-//          header(file("src/nativeInterop/cinterop/cmark/cmark.h"))
-//          header(file("src/nativeInterop/cinterop/cmark/cmark_export.h"))
-//          header(file("src/nativeInterop/cinterop/cmark/cmark_version.h"))
-          headers(*(file("src/nativeInterop/cinterop/cmark/include/").listFiles()!!.toList().toTypedArray()))
+          headers(
+            *(file("src/nativeInterop/cinterop/cmark/include/").listFiles()!!.toList()
+              .toTypedArray())
+          )
           extraOpts(
             "-libraryPath",
-            file("src/nativeInterop/cinterop/cmark/${it.targetName}/").absolutePath.apply {
-              println("cmark library path: $this")
-            }
+            file("src/nativeInterop/cinterop/cmark/${it.targetName}/").absolutePath
           )
         }
       }
