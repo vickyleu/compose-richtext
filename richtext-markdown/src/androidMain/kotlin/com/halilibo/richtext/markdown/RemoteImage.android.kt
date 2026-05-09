@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
-import coil3.networkObserverEnabled
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -38,7 +37,6 @@ internal actual fun RemoteImage(
   val imageLoader = ImageLoader.Builder(LocalPlatformContext.current)
     .diskCachePolicy(CachePolicy.DISABLED)
     .memoryCachePolicy(CachePolicy.DISABLED)
-    .networkObserverEnabled(false)
     .build()
   val painter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalContext.current)
@@ -54,9 +52,8 @@ internal actual fun RemoteImage(
   BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
     val sizeModifier by remember(density, painter) {
       derivedStateOf {
-        val painterIntrinsicSize = painter.state.painter?.intrinsicSize
-        if (painterIntrinsicSize != null &&
-          painterIntrinsicSize.isSpecified &&
+        val painterIntrinsicSize = painter.intrinsicSize
+        if (painterIntrinsicSize.isSpecified &&
           painterIntrinsicSize.width != Float.POSITIVE_INFINITY &&
           painterIntrinsicSize.height != Float.POSITIVE_INFINITY
         ) {

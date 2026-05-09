@@ -3,6 +3,14 @@
 pluginManagement {
   listOf(repositories, dependencyResolutionManagement.repositories).forEach {
     it.apply {
+      maven("https://maven.aliyun.com/repository/google") {
+        content {
+          includeGroupByRegex(".*google.*")
+          includeGroupByRegex(".*android.*")
+          includeGroupByRegex("androidx.*")
+          includeGroupByRegex("com.android.*")
+        }
+      }
       mavenCentral()
       gradlePluginPortal()
       google {
@@ -20,6 +28,14 @@ dependencyResolutionManagement {
 //    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
   repositories {
+    maven("https://maven.aliyun.com/repository/google") {
+      content {
+        includeGroupByRegex(".*google.*")
+        includeGroupByRegex(".*android.*")
+        includeGroupByRegex("androidx.*")
+        includeGroupByRegex("com.android.*")
+      }
+    }
     mavenCentral()
     google {
       content {
@@ -45,9 +61,10 @@ include(":richtext-ui-material")
 include(":richtext-ui-material3")
 include(":richtext-commonmark")
 include(":richtext-markdown")
-include(":android-sample")
-include(":desktop-sample")
-include(":slideshow")
+// samples removed: not needed for Maven Central publishing
+//include(":android-sample")
+//include(":desktop-sample")
+//include(":slideshow")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "compose-richtext"

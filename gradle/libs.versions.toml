@@ -1,21 +1,22 @@
 [versions]
-activityCompose = "1.9.0"
-agp = "8.4.2"
+activityCompose = "1.13.0"
+agp = "8.13.2"
 annotatedtext = "1.0.3"
-coilCompose = "3.0.0-alpha06"
+coilCompose = "3.4.0"
 commonmark = "0.21.0"
 jvmTarget = "17"
-compose-plugin = "1.6.11"
-kotlin = "2.0.0"
-coroutines-bom = "1.8.1"
-android-compileSdk = "34"
+compose-plugin = "1.10.3"
+kotlin = "2.3.21"
+coroutines-bom = "1.10.2"
+android-compileSdk = "36"
 android-minSdk = "24"
-android-targetSdk = "34"
-dokka = "1.9.20"
+android-targetSdk = "36"
+dokka = "2.2.0"
+vanniktech-maven-publish = "0.36.0"
 annotations = "23.0.0"
 okhttp = "4.12.0"
 uiToolingData = "1.6.7"
-appcompat = "1.7.0"
+appcompat = "1.7.1"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -34,6 +35,7 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 
 [plugins]
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }

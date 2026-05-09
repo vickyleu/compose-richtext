@@ -35,7 +35,9 @@ android {
 
 kotlin {
   applyDefaultHierarchyTemplate()
-  androidTarget()
+  androidTarget {
+    publishLibraryVariants("release")
+  }
   iosArm64()
   iosSimulatorArm64()
   iosX64()
